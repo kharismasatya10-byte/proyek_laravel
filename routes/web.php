@@ -2,18 +2,15 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SuratMasukController;
+use App\Http\Controllers\SuratKeluarController;
 
 Route::get('/', function () {
      return view('dashboard');
 })->name('dashboard');
 
 // Route controller untuk halaman utama surat masuk (index)
-Route::get('/surat-masuk', [SuratMasukController::class, 'index'])
-    ->name('surat-masuk.index');
+Route::resource('surat-masuk', SuratMasukController::class)->parameters(['surat-masuk' => 'id']);
 
-// Route controller untuk halaman detail (show)
-Route::get('/surat-masuk/{id}', [SuratMasukController::class, 'show'])
-    ->name('surat-masuk.show');
-
-Route::get('/surat-keluar', [App\Http\Controllers\SuratKeluarController::class, 'index'])->name('surat-keluar.index');
-Route::get('/surat-keluar/{id}', [App\Http\Controllers\SuratKeluarController::class, 'show'])->name('surat-keluar.show');
+// Resource route Surat Keluar (Latihan Mandiri)
+Route::resource('surat-keluar', SuratKeluarController::class)
+    ->parameters(['surat-keluar' => 'id']);

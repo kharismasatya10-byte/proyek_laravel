@@ -2,26 +2,81 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OutgoingLetter;
 use Illuminate\Http\Request;
-use App\Models\OutgoingLetter; // Baris ini sudah benar ada di sini
 
 class SuratKeluarController extends Controller
 {
+    // 1. Menampilkan daftar surat keluar
     public function index()
     {
-        // Mengambil semua data dari model OutgoingLetter
-        $SuratKeluar = OutgoingLetter::all();
-
-        // Mengirimkan variabel $SuratKeluar ke view
-        return view('surat-keluar.index', compact('SuratKeluar')); 
+        $suratKeluar = OutgoingLetter::orderBy('id', 'desc')->get();
+        return view('surat-keluar.index', compact('suratKeluar'));
     }
 
+    // 2. Menampilkan form tambah
+    public function create()
+    {
+        return view('surat-keluar.create');
+    }
+
+    // 3. Memvalidasi & menyimpan data baru
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'nomor_surat' => 'required|string|max:255',
+            'tanggal'     => 'required|date',
+            'tujuan'      => 'required|string|max:255',
+            'perihal'     => 'required|string|max:255',
+            'keterangan'  => 'nullable|string',
+        ]);
+
+        OutgoingLetter::create($validated);
+
+        return redirect()->route('surat-keluar.index')
+            ->with('success', 'Surat keluar berhasil ditambahkan.');
+    }
+
+    // 4. Menampilkan detail surat keluar
     public function show($id)
     {
-        // Mencari data surat berdasarkan ID
+        $surat = OutgoingLetter::findOrFail($id);
+        return view('surat-keluar.show', compact('surat'));
+    }
+
+    // 5. Menampilkan form edit
+    public function edit($id)
+    {
+        $surat = OutgoingLetter::findOrFail($id);
+        return view('surat-keluar.edit', compact('surat'));
+    }
+
+    // 6. Memvalidasi & memperbarui data
+    public function update(Request $request, $id)
+    {
         $surat = OutgoingLetter::findOrFail($id);
 
-        // Mengirimkan variabel $surat ke view
-        return view('surat-keluar.show', compact('surat'));
+        $validated = $request->validate([
+            'nomor_surat' => 'required|string|max:255',
+            'tanggal'     => 'required|date',
+            'tujuan'      => 'required|string|max:255',
+            'perihal'     => 'required|string|max:255',
+            'keterangan'  => 'nullable|string',
+        ]);
+
+        $surat->update($validated);
+
+        return redirect()->route('surat-keluar.index')
+            ->with('success', 'Surat keluar berhasil diperbarui.');
+    }
+
+    // 7. Menghapus data
+    public function destroy($id)
+    {
+        $surat = OutgoingLetter::findOrFail($id);
+        $surat->delete();
+
+        return redirect()->route('surat-keluar.index')
+            ->with('success', 'Surat keluar berhasil dihapus.');
     }
 }
