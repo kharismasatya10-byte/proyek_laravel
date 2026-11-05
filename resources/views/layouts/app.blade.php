@@ -12,6 +12,15 @@
             <a href="{{route('dashboard') }}">dashboard</a>
             <a href="{{route('surat-masuk.index') }}">Surat Masuk</a>
             <a href="{{ route('surat-keluar.index') }}">Surat Keluar</a>
+            
+            <!-- Tambahan Tahap 7: Info User & Logout -->
+            @auth
+                <span style="margin-left: 15px;">Masuk sebagai: {{ auth()->user()->name }}</span>
+                <form method="POST" action="{{ route('logout') }}" style="display:inline">
+                    @csrf
+                    <button type="submit">Keluar</button>
+                </form>
+            @endauth
         </nav>
     </header>
 
